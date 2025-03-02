@@ -11,8 +11,11 @@
 - [x] 生成PDF
 
 ### 截图
-<img width="627" alt="image" src="https://github.com/user-attachments/assets/21d18a51-a4f6-44ee-bb1a-831919f400f2" />  
-<img width="723" alt="image" src="https://github.com/user-attachments/assets/ec6e08f9-7afb-4f9d-a743-bb1973d8530c" />
+<img width="890" alt="image" src="https://github.com/user-attachments/assets/4c9e2628-4558-4b79-8534-5bca6248fc20" />  
+<img width="890" alt="image" src="https://github.com/user-attachments/assets/79b78042-ef2f-4b0e-bd75-4aaca63a371c" />  
+<img width="951" alt="image" src="https://github.com/user-attachments/assets/b6773b77-76e9-4922-b7c9-7d5a271d0704" />
+
+
 
 
 
