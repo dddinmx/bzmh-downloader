@@ -1,0 +1,5 @@
+beautifulsoup4==4.13.3
+img2pdf==0.6.0
+natsort==8.4.0
+Pillow==11.1.0
+Requests==2.32.3
