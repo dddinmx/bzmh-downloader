@@ -41,9 +41,24 @@ def images_to_pdf(folder_path):
         # 创建PDF文件名
         pdf_name = f"{os.path.basename(folder_path)}.pdf"
         
+        # 检查并调整图片尺寸
+        valid_images = []
+        for image_path in images:
+            with Image.open(image_path) as img:
+                width, height = img.size
+                # 检查图片尺寸是否在允许范围内（3到14400点）
+                if width < 3 or height < 3 or width > 14400 or height > 14400:
+                    print(f"图片 {image_path} 的尺寸不在允许范围内（{width}x{height}），跳过该图片")
+                    continue
+                valid_images.append(image_path)
+        
+        if not valid_images:
+            print("没有有效的图片可以生成PDF")
+            return
+
         # 转换图片为PDF
         with open(pdf_name, "wb") as f:
-            f.write(img2pdf.convert(images))
+            f.write(img2pdf.convert(valid_images))
         
         print(f"成功生成PDF：{pdf_name}")
 
