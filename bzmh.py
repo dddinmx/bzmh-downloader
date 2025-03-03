@@ -138,7 +138,7 @@ if __name__ == "__main__":
     """
     print(banner)
     print ("auther by dddinmx"+"\n"+"Github: https://github.com/dddinmx/bzmh-downloader")
-    print ("漫画地址获取: https://cn.baozimhcn.com/")
+    print ("漫画地址获取: https://cn.baozimhcn.com/"+"\n"+"              https://www.baozimh.com/")
     print ("\n"+"1 整本下载"+"\n"+"2 更新")
     model = str(input("选择: "))
 
@@ -164,7 +164,7 @@ if __name__ == "__main__":
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-        if "已完结" in html_content or "已完結" in html_content:
+        if any(keyword in html_content for keyword in ["已完结", "已完結", "大结局", "大結局"]):
             # 获取完结漫画最大数
             pattern = r'chapter_slot=(\d+)'
             matches = re.findall(pattern, html_content)
@@ -235,7 +235,7 @@ if __name__ == "__main__":
         }
         folder, chapter_max, html_content = title(update_url)
 
-        if "已完结" in html_content or "已完結" in html_content:
+        if any(keyword in html_content for keyword in ["已完结", "已完結", "大结局", "大結局"]):
             pattern = r'chapter_slot=(\d+)'
             matches = re.findall(pattern, html_content)
             if matches:
