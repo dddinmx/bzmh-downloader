@@ -23,7 +23,7 @@ def title(url):
     if chapter_slot:
         chapter_max = chapter_slot.group(1)
 
-    return str(title), int(chapter_max)
+    return str(title), int(chapter_max), html_content
 
 def images_to_pdf(folder_path):
     try:
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     bzmhbzmhbzmhbzmhbzmhbzmhbzmh
     """
     print(banner)
-    print ("auther by lmx"+"\n"+"Github: https://github.com/dddinmx")
+    print ("auther by dddinmx"+"\n"+"Github: https://github.com/dddinmx/bzmh-downloader")
     print ("漫画地址获取: https://www.twmanga.com/")
     print ("\n"+"1 整本下载"+"\n"+"2 更新")
     model = str(input("选择: "))
@@ -148,8 +148,8 @@ if __name__ == "__main__":
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
-        folder, chapter_max = title(input_url)
 
+        folder, chapter_max, html_content = title(input_url)  # 漫画主要信息获取
         new_data = {folder: input_url}
         json_file_path = "./comic.json"
         if os.path.exists(json_file_path):
@@ -164,20 +164,43 @@ if __name__ == "__main__":
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-        for chapter_num in range(0, chapter_max):
-            url = base_chapter_url.format(chapter_num)
-            response = requests.head(url, headers=headers)
-            if response.status_code == 200:
-                print(f"\n开始处理第 {chapter_num+1} 章")
-                crawl_chapter(url, chapter_num+1)
-                save_dir = f"{chapter_num+1:02d}"
-                shutil.rmtree(save_dir)
-                pdf_files = glob.glob(os.path.join(".", "*.pdf"))
-                for pdf_file in pdf_files:
-                    shutil.move(pdf_file, "./"+folder)
-            else:
-                print(f"章节{chapter_num+1}不存在，停止检测")
-                break
+        if "已完结" in html_content or "已完結" in html_content:
+            # 获取完结漫画最大数
+            pattern = r'chapter_slot=(\d+)'
+            matches = re.findall(pattern, html_content)
+            if matches:
+                chapter_max = max(map(int, matches))
+                print ("漫画已完结,章数: "+str(chapter_max))
+
+            for chapter_num in range(0, chapter_max):
+                url = base_chapter_url.format(chapter_num)
+                response = requests.head(url, headers=headers)
+                if response.status_code == 200:
+                    print(f"\n开始处理第 {chapter_num+1} 章")
+                    crawl_chapter(url, chapter_num+1)
+                    save_dir = f"{chapter_num+1:02d}"
+                    shutil.rmtree(save_dir)
+                    pdf_files = glob.glob(os.path.join(".", "*.pdf"))
+                    for pdf_file in pdf_files:
+                        shutil.move(pdf_file, "./"+folder)
+                else:
+                    print(f"章节{chapter_num+1}不存在，停止检测")
+                    break
+        else:
+            for chapter_num in range(0, chapter_max):
+                url = base_chapter_url.format(chapter_num)
+                response = requests.head(url, headers=headers)
+                if response.status_code == 200:
+                    print(f"\n开始处理第 {chapter_num+1} 章")
+                    crawl_chapter(url, chapter_num+1)
+                    save_dir = f"{chapter_num+1:02d}"
+                    shutil.rmtree(save_dir)
+                    pdf_files = glob.glob(os.path.join(".", "*.pdf"))
+                    for pdf_file in pdf_files:
+                        shutil.move(pdf_file, "./"+folder)
+                else:
+                    print(f"章节{chapter_num+1}不存在，停止检测")
+                    break
 
     if model == "2":
         path = './'  
@@ -204,7 +227,30 @@ if __name__ == "__main__":
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
-        folder, chapter_max = title(update_url)
+        folder, chapter_max, html_content = title(update_url)
+
+        if "已完结" in html_content or "已完結" in html_content:
+            pattern = r'chapter_slot=(\d+)'
+            matches = re.findall(pattern, html_content)
+            if matches:
+                chapter_max = max(map(int, matches))
+                print ("漫画已完结,章数: "+str(chapter_max))
+            if pdf_file_count < chapter_max:
+                print ("找到更新,开始下载."+"\n")
+            for chapter_num in range(pdf_file_count, chapter_max):
+                url = base_chapter_url.format(chapter_num)
+                response = requests.head(url, headers=headers)
+                if response.status_code == 200:
+                    print(f"\n开始处理第 {chapter_num+1} 章")
+                    crawl_chapter(url, chapter_num+1)
+                    save_dir = f"{chapter_num+1:02d}"
+                    shutil.rmtree(save_dir)
+                    pdf_files = glob.glob(os.path.join(".", "*.pdf"))
+                    for pdf_file in pdf_files:
+                        shutil.move(pdf_file, "./"+folder)
+                else:
+                    print(f"章节{chapter_num+1}不存在，停止检测")
+                    break
         if pdf_file_count < chapter_max:
             print ("找到更新,开始下载."+"\n")
             if not os.path.exists(folder):
@@ -227,5 +273,3 @@ if __name__ == "__main__":
             print ("未找到更新.")
     else:
         print ("退出.")
-
-        
