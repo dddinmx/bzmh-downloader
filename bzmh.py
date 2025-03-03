@@ -1,275 +1,249 @@
-import os,re,time,requests,img2pdf,shutil,glob,json
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from PIL import Image
-from natsort import natsorted
-from bs4 import BeautifulSoup
+import os as _0x1
+import re as _0x2
+import time as _0x3
+import requests as _0x4
+import img2pdf as _0x5
+import shutil as _0x6
+import glob as _0x7
+import json as _0x8
+from concurrent.futures import ThreadPoolExecutor as _0x9, as_completed as _0xa
+from PIL import Image as _0xb
+from natsort import natsorted as _0xc
+from bs4 import BeautifulSoup as _0xd
 
-CONFIG = {
-    'max_workers': 6,          # 并发线程数
-    'request_timeout': 20,      # 请求超时时间
-    'retry_times': 3,           # 重试次数
-    'queue_buffer': 10,         # 队列缓冲数量
-    'delay_range': (0.1, 0.5)   # 随机延迟范围
+_0xe = {
+    'max_workers': 6,
+    'request_timeout': 20,
+    'retry_times': 3,
+    'queue_buffer': 10,
+    'delay_range': (0.1, 0.5)
 }
 
-def title(url):
-    response = requests.get(url,timeout=5)
-    html_content = response.text
-    soup = BeautifulSoup(html_content, "html.parser")
-    title_tag = soup.find("h1", class_="comics-detail__title")
-    chapter_slot = re.search(r'chapter_slot=(\d+)', html_content)
-    if title_tag:
-        title = title_tag.get_text(strip=True)
-    if chapter_slot:
-        chapter_max = chapter_slot.group(1)
+def _0xf(_0x10):
+    _0x11 = _0x4.get(_0x10, timeout=5)
+    _0x12 = _0x11.text
+    _0x13 = _0xd(_0x12, "html.parser")
+    _0x14 = _0x13.find("h1", class_="comics-detail__title")
+    _0x15 = _0x2.search(r'chapter_slot=(\d+)', _0x12)
+    if _0x14:
+        _0x16 = _0x14.get_text(strip=True)
+    if _0x15:
+        _0x17 = _0x15.group(1)
+    return str(_0x16), int(_0x17), _0x12
 
-    return str(title), int(chapter_max), html_content
-
-def images_to_pdf(folder_path):
+def _0x18(_0x19):
     try:
-        images = []
-        for fname in os.listdir(folder_path):
-            if fname.lower().endswith(('.jpg', '.jpeg', '.png')):
-                images.append(os.path.join(folder_path, fname))
-        
-        images = natsorted(images)
-        
-        if not images:
-            print(f"文件夹 {folder_path} 中没有图片")
+        _0x1a = []
+        for _0x1b in _0x1.listdir(_0x19):
+            if _0x1b.lower().endswith(('.jpg', '.jpeg', '.png')):
+                _0x1a.append(_0x1.path.join(_0x19, _0x1b))
+        _0x1a = _0xc(_0x1a)
+        if not _0x1a:
+            print(f"文件夹 {_0x19} 中没有图片")
             return
+        _0x1c = f"{_0x1.path.basename(_0x19)}.pdf"
+        with open(_0x1c, "wb") as _0x1d:
+            _0x1d.write(_0x5.convert(_0x1a))
+        print(f"成功生成PDF：{_0x1c}")
+    except Exception as _0x1e:
+        print(f"PDF生成失败：{str(_0x1e)}")
 
-        # 创建PDF文件名
-        pdf_name = f"{os.path.basename(folder_path)}.pdf"
-        
-        # 转换图片为PDF
-        with open(pdf_name, "wb") as f:
-            f.write(img2pdf.convert(images))
-        
-        print(f"成功生成PDF：{pdf_name}")
-
-    except Exception as e:
-        print(f"PDF生成失败：{str(e)}")
-
-def download_image(session, base_url, save_dir, n, retries=3):
-    img_url = base_url.format(n)
-    file_path = os.path.join(save_dir, f"{n}.jpg")
-    
-    for attempt in range(retries):
+def _0x1f(_0x20, _0x21, _0x22, _0x23, _0x24=3):
+    _0x25 = _0x21.format(_0x23)
+    _0x26 = _0x1.path.join(_0x22, f"{_0x23}.jpg")
+    for _0x27 in range(_0x24):
         try:
-            with session.get(img_url, stream=True, timeout=15) as response:
-                if response.status_code == 200:
-                    with open(file_path, 'wb') as f:
-                        for chunk in response.iter_content(2048):
-                            f.write(chunk)
-                    return True, n, False  # 成功，无需停止
+            with _0x20.get(_0x25, stream=True, timeout=15) as _0x28:
+                if _0x28.status_code == 200:
+                    with open(_0x26, 'wb') as _0x29:
+                        for _0x2a in _0x28.iter_content(2048):
+                            _0x29.write(_0x2a)
+                    return True, _0x23, False
                 else:
-                    if response.status_code == 404:
-                        return False, n, True  # 需要停止下载
+                    if _0x28.status_code == 404:
+                        return False, _0x23, True
                     else:
-                        print(f"图片{n} 下载失败，状态码：{response.status_code}，第{attempt+1}次重试。")
-        except Exception as e:
-            print(f"图片{n} 下载失败：{str(e)}，第{attempt+1}次重试。")
-        # 指数退避等待
-        if attempt < retries - 1:
-            time.sleep(2 ** attempt)
-    return False, n, False  # 失败但无需停止
+                        print(f"图片{_0x23} 下载失败，状态码：{_0x28.status_code}，第{_0x27+1}次重试。")
+        except Exception as _0x2b:
+            print(f"图片{_0x23} 下载失败：{str(_0x2b)}，第{_0x27+1}次重试。")
+        if _0x27 < _0x24 - 1:
+            _0x3.sleep(2 ** _0x27)
+    return False, _0x23, False
 
-def crawl_chapter(chapter_url, save_prefix):
-    save_dir = f"{save_prefix:02d}"
-    os.makedirs(save_dir, exist_ok=True)
-
-    headers = {
+def _0x2c(_0x2d, _0x2e):
+    _0x2f = f"{_0x2e:02d}"
+    _0x1.makedirs(_0x2f, exist_ok=True)
+    _0x30 = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
-    
-    with requests.Session() as session:
+    with _0x4.Session() as _0x31:
         try:
-            response = session.get(chapter_url, headers=headers, timeout=10)
-            if response.status_code != 200:
-                print(f"章节页访问失败：{response.status_code}")
+            _0x32 = _0x31.get(_0x2d, headers=_0x30, timeout=10)
+            if _0x32.status_code != 200:
+                print(f"章节页访问失败：{_0x32.status_code}")
                 return
-            
-            match = re.search(r'(https?://[^/]+/scomic/[^/]+/\d+/[^/]+/1\.jpg)', response.text)
-            if not match:
+            _0x33 = _0x2.search(r'(https?://[^/]+/scomic/[^/]+/\d+/[^/]+/1\.jpg)', _0x32.text)
+            if not _0x33:
                 print("未找到1.jpg的图片地址")
                 return
-            
-            base_url = match.group(1).replace("1.jpg", "{}.jpg")
-            print(f"开始下载章节：{save_dir}")
-
-            max_workers = 4
-            success_count = 0
-            n = 1
-            stop_flag = False
-
-            with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                while not stop_flag:
-                    futures = []
-                    for _ in range(max_workers * 2):
-                        futures.append(executor.submit(download_image, session, base_url, save_dir, n))
-                        n += 1
-
-                    for future in as_completed(futures):
-                        success, num, stop_download = future.result()
-                        if success:
-                            success_count += 1
-                            print(f"已下载：{save_dir}/{num}.jpg")
+            _0x34 = _0x33.group(1).replace("1.jpg", "{}.jpg")
+            print(f"开始下载章节：{_0x2f}")
+            _0x35 = 4
+            _0x36 = 0
+            _0x37 = 1
+            _0x38 = False
+            with _0x9(max_workers=_0x35) as _0x39:
+                while not _0x38:
+                    _0x3a = []
+                    for _ in range(_0x35 * 2):
+                        _0x3a.append(_0x39.submit(_0x1f, _0x31, _0x34, _0x2f, _0x37))
+                        _0x37 += 1
+                    for _0x3b in _0xa(_0x3a):
+                        _0x3c, _0x3d, _0x3e = _0x3b.result()
+                        if _0x3c:
+                            _0x36 += 1
+                            print(f"已下载：{_0x2f}/{_0x3d}.jpg")
                         else:
-                            if stop_download:
-                                stop_flag = True
-                                executor.shutdown(wait=False)
+                            if _0x3e:
+                                _0x38 = True
+                                _0x39.shutdown(wait=False)
                                 break
-
-                    time.sleep(0.5)
-
-            print(f"章节 {save_dir} 下载完成，开始生成PDF...")
-            images_to_pdf(save_dir)
-
-        except Exception as e:
-            print(f"章节处理异常：{str(e)}")
+                    _0x3.sleep(0.5)
+            print(f"章节 {_0x2f} 下载完成，开始生成PDF...")
+            _0x18(_0x2f)
+        except Exception as _0x3f:
+            print(f"章节处理异常：{str(_0x3f)}")
 
 if __name__ == "__main__":
-    banner = r"""
+    _0x40 = r"""
     bzmhbzmhbzmhbzmhbzmhbzmhbzmh
     bzmh                  bzmh
     bzmh  bzmh  bzmh  bzmh  bzmh
     bzmh                  bzmh
     bzmhbzmhbzmhbzmhbzmhbzmhbzmh
     """
-    print(banner)
-    print ("auther by dddinmx"+"\n"+"Github: https://github.com/dddinmx/bzmh-downloader")
-    print ("漫画地址获取: https://www.twmanga.com/")
-    print ("\n"+"1 整本下载"+"\n"+"2 更新")
-    model = str(input("选择: "))
-
-    if model == "1":
-        input_url = str(input("\n"+"输入漫画地址: "))
-        base_chapter_url = input_url.replace("/comic/", "/comic/chapter/") + "/0_{}.html"
-        headers = {
+    print(_0x40)
+    print("auther by dddinmx"+"\n"+"Github: https://github.com/dddinmx/bzmh-downloader")
+    print("漫画地址获取: https://www.twmanga.com/")
+    print("\n"+"1 整本下载"+"\n"+"2 更新")
+    _0x41 = str(input("选择: "))
+    if _0x41 == "1":
+        _0x42 = str(input("\n"+"输入漫画地址: "))
+        _0x43 = _0x42.replace("/comic/", "/comic/chapter/") + "/0_{}.html"
+        _0x44 = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
-
-        folder, chapter_max, html_content = title(input_url)  # 漫画主要信息获取
-        new_data = {folder: input_url}
-        json_file_path = "./comic.json"
-        if os.path.exists(json_file_path):
-            with open(json_file_path, "r", encoding="utf-8") as json_file:
-                existing_data = json.load(json_file)
+        _0x45, _0x46, _0x47 = _0xf(_0x42)
+        _0x48 = {_0x45: _0x42}
+        _0x49 = "./comic.json"
+        if _0x1.path.exists(_0x49):
+            with open(_0x49, "r", encoding="utf-8") as _0x4a:
+                _0x4b = _0x8.load(_0x4a)
         else:
-            existing_data = {}
-        existing_data.update(new_data)
-        with open(json_file_path, "w", encoding="utf-8") as json_file:
-            json.dump(existing_data, json_file, ensure_ascii=False, indent=4)
-
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-
-        if "已完结" in html_content or "已完結" in html_content:
-            # 获取完结漫画最大数
-            pattern = r'chapter_slot=(\d+)'
-            matches = re.findall(pattern, html_content)
-            if matches:
-                chapter_max = max(map(int, matches))
-                print ("漫画已完结,章数: "+str(chapter_max))
-
-            for chapter_num in range(0, chapter_max):
-                url = base_chapter_url.format(chapter_num)
-                response = requests.head(url, headers=headers)
-                if response.status_code == 200:
-                    print(f"\n开始处理第 {chapter_num+1} 章")
-                    crawl_chapter(url, chapter_num+1)
-                    save_dir = f"{chapter_num+1:02d}"
-                    shutil.rmtree(save_dir)
-                    pdf_files = glob.glob(os.path.join(".", "*.pdf"))
-                    for pdf_file in pdf_files:
-                        shutil.move(pdf_file, "./"+folder)
+            _0x4b = {}
+        _0x4b.update(_0x48)
+        with open(_0x49, "w", encoding="utf-8") as _0x4c:
+            _0x8.dump(_0x4b, _0x4c, ensure_ascii=False, indent=4)
+        if not _0x1.path.exists(_0x45):
+            _0x1.makedirs(_0x45)
+        if "已完结" in _0x47 or "已完結" in _0x47:
+            _0x4d = r'chapter_slot=(\d+)'
+            _0x4e = _0x2.findall(_0x4d, _0x47)
+            if _0x4e:
+                _0x46 = max(map(int, _0x4e))
+                print("漫画已完结,章数: "+str(_0x46))
+            for _0x4f in range(0, _0x46):
+                _0x50 = _0x43.format(_0x4f)
+                _0x51 = _0x4.head(_0x50, headers=_0x44)
+                if _0x51.status_code == 200:
+                    print(f"\n开始处理第 {_0x4f+1} 章")
+                    _0x2c(_0x50, _0x4f+1)
+                    _0x52 = f"{_0x4f+1:02d}"
+                    _0x6.rmtree(_0x52)
+                    _0x53 = _0x7.glob(_0x1.path.join(".", "*.pdf"))
+                    for _0x54 in _0x53:
+                        _0x6.move(_0x54, "./"+_0x45)
                 else:
-                    print(f"章节{chapter_num+1}不存在，停止检测")
+                    print(f"章节{_0x4f+1}不存在，停止检测")
                     break
         else:
-            for chapter_num in range(0, chapter_max):
-                url = base_chapter_url.format(chapter_num)
-                response = requests.head(url, headers=headers)
-                if response.status_code == 200:
-                    print(f"\n开始处理第 {chapter_num+1} 章")
-                    crawl_chapter(url, chapter_num+1)
-                    save_dir = f"{chapter_num+1:02d}"
-                    shutil.rmtree(save_dir)
-                    pdf_files = glob.glob(os.path.join(".", "*.pdf"))
-                    for pdf_file in pdf_files:
-                        shutil.move(pdf_file, "./"+folder)
+            for _0x4f in range(0, _0x46):
+                _0x50 = _0x43.format(_0x4f)
+                _0x51 = _0x4.head(_0x50, headers=_0x44)
+                if _0x51.status_code == 200:
+                    print(f"\n开始处理第 {_0x4f+1} 章")
+                    _0x2c(_0x50, _0x4f+1)
+                    _0x52 = f"{_0x4f+1:02d}"
+                    _0x6.rmtree(_0x52)
+                    _0x53 = _0x7.glob(_0x1.path.join(".", "*.pdf"))
+                    for _0x54 in _0x53:
+                        _0x6.move(_0x54, "./"+_0x45)
                 else:
-                    print(f"章节{chapter_num+1}不存在，停止检测")
+                    print(f"章节{_0x4f+1}不存在，停止检测")
                     break
-
-    if model == "2":
-        path = './'  
-        folders = []
-        with os.scandir(path) as entries:
-            for entry in entries:
-                if entry.is_dir():
-                    folders.append(entry.name)
-        for folder in sorted(folders):
-            print(folder)
-        comic_name = input("输入要更新的漫画名: ")
-        comic_path = "./"+comic_name
-        pdf_files = glob.glob(os.path.join(comic_path, "*.pdf"))
-        pdf_file_count = len(pdf_files)
-
-        # 读取 JSON 文件
-        json_file_path = "./comic.json"
-        with open(json_file_path, "r", encoding="utf-8") as json_file:
-            data = json.load(json_file)
-        update_url = data[comic_name]
-
-        # 更新漫画
-        base_chapter_url = update_url.replace("/comic/", "/comic/chapter/") + "/0_{}.html"
-        headers = {
+    elif _0x41 == "2":
+        _0x55 = './'
+        _0x56 = []
+        with _0x1.scandir(_0x55) as _0x57:
+            for _0x58 in _0x57:
+                if _0x58.is_dir():
+                    _0x56.append(_0x58.name)
+        for _0x59 in sorted(_0x56):
+            print(_0x59)
+        _0x5a = input("输入要更新的漫画名: ")
+        _0x5b = "./"+_0x5a
+        _0x5c = _0x7.glob(_0x1.path.join(_0x5b, "*.pdf"))
+        _0x5d = len(_0x5c)
+        _0x49 = "./comic.json"
+        with open(_0x49, "r", encoding="utf-8") as _0x5e:
+            _0x5f = _0x8.load(_0x5e)
+        _0x60 = _0x5f[_0x5a]
+        _0x43 = _0x60.replace("/comic/", "/comic/chapter/") + "/0_{}.html"
+        _0x44 = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
-        folder, chapter_max, html_content = title(update_url)
-
-        if "已完结" in html_content or "已完結" in html_content:
-            pattern = r'chapter_slot=(\d+)'
-            matches = re.findall(pattern, html_content)
-            if matches:
-                chapter_max = max(map(int, matches))
-                print ("漫画已完结,章数: "+str(chapter_max))
-            if pdf_file_count < chapter_max:
-                print ("找到更新,开始下载."+"\n")
-            for chapter_num in range(pdf_file_count, chapter_max):
-                url = base_chapter_url.format(chapter_num)
-                response = requests.head(url, headers=headers)
-                if response.status_code == 200:
-                    print(f"\n开始处理第 {chapter_num+1} 章")
-                    crawl_chapter(url, chapter_num+1)
-                    save_dir = f"{chapter_num+1:02d}"
-                    shutil.rmtree(save_dir)
-                    pdf_files = glob.glob(os.path.join(".", "*.pdf"))
-                    for pdf_file in pdf_files:
-                        shutil.move(pdf_file, "./"+folder)
+        _0x45, _0x46, _0x47 = _0xf(_0x60)
+        if "已完结" in _0x47 or "已完結" in _0x47:
+            _0x4d = r'chapter_slot=(\d+)'
+            _0x4e = _0x2.findall(_0x4d, _0x47)
+            if _0x4e:
+                _0x46 = max(map(int, _0x4e))
+                print("漫画已完结,章数: "+str(_0x46))
+            if _0x5d < _0x46:
+                print("找到更新,开始下载."+"\n")
+            for _0x4f in range(_0x5d, _0x46):
+                _0x50 = _0x43.format(_0x4f)
+                _0x51 = _0x4.head(_0x50, headers=_0x44)
+                if _0x51.status_code == 200:
+                    print(f"\n开始处理第 {_0x4f+1} 章")
+                    _0x2c(_0x50, _0x4f+1)
+                    _0x52 = f"{_0x4f+1:02d}"
+                    _0x6.rmtree(_0x52)
+                    _0x53 = _0x7.glob(_0x1.path.join(".", "*.pdf"))
+                    for _0x54 in _0x53:
+                        _0x6.move(_0x54, "./"+_0x45)
                 else:
-                    print(f"章节{chapter_num+1}不存在，停止检测")
+                    print(f"章节{_0x4f+1}不存在，停止检测")
                     break
-        if pdf_file_count < chapter_max:
-            print ("找到更新,开始下载."+"\n")
-            if not os.path.exists(folder):
-                os.makedirs(folder)
-            for chapter_num in range(pdf_file_count, chapter_max):
-                url = base_chapter_url.format(chapter_num)
-                response = requests.head(url, headers=headers)
-                if response.status_code == 200:
-                    print(f"\n开始处理第 {chapter_num+1} 章")
-                    crawl_chapter(url, chapter_num+1)
-                    save_dir = f"{chapter_num+1:02d}"
-                    shutil.rmtree(save_dir)
-                    pdf_files = glob.glob(os.path.join(".", "*.pdf"))
-                    for pdf_file in pdf_files:
-                        shutil.move(pdf_file, "./"+folder)
+        if _0x5d < _0x46:
+            print("找到更新,开始下载."+"\n")
+            if not _0x1.path.exists(_0x45):
+                _0x1.makedirs(_0x45)
+            for _0x4f in range(_0x5d, _0x46):
+                _0x50 = _0x43.format(_0x4f)
+                _0x51 = _0x4.head(_0x50, headers=_0x44)
+                if _0x51.status_code == 200:
+                    print(f"\n开始处理第 {_0x4f+1} 章")
+                    _0x2c(_0x50, _0x4f+1)
+                    _0x52 = f"{_0x4f+1:02d}"
+                    _0x6.rmtree(_0x52)
+                    _0x53 = _0x7.glob(_0x1.path.join(".", "*.pdf"))
+                    for _0x54 in _0x53:
+                        _0x6.move(_0x54, "./"+_0x45)
                 else:
-                    print(f"章节{chapter_num+1}不存在，停止检测")
+                    print(f"章节{_0x4f+1}不存在，停止检测")
                     break
         else:
-            print ("未找到更新.")
+            print("未找到更新.")
     else:
-        print ("退出.")
+        print("退出.")
