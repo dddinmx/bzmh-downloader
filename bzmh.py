@@ -213,7 +213,7 @@ if __name__ == "__main__":
             print(folder)
         comic_name = input("输入要更新的漫画名: ")
         comic_path = "./"+comic_name
-        pdf_files = [f for f in os.listdir("./"+folder) if f.endswith('.pdf')]
+        pdf_files = [f for f in os.listdir(comic_path) if f.endswith('.pdf')]
         numbers = []
         for pdf_file in pdf_files:
             match = re.search(r'\d+', pdf_file)
