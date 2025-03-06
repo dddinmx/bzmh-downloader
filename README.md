@@ -8,7 +8,7 @@
 
 ### 功能  
 - [x] 断点下载，下载中断退出后，重新运行选择[更新]可续下。  
-- [x] 生成PDF
+- [x] 保存为PDF、CBZ格式
 
 ### 截图
 <img width="890" alt="image" src="https://github.com/user-attachments/assets/4c9e2628-4558-4b79-8534-5bca6248fc20" />  
