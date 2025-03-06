@@ -91,9 +91,9 @@ def download_image(session, base_url, save_dir, n, retries=3):
                     if response.status_code == 404:
                         return False, n, True
                     else:
-                        print(f"图片{n} 下载失败，状态码：{response.status_code}，第{attempt+1}次重试。")
+                        print(f"图片{n} 下载失败，第{attempt+1}次重试。")
         except Exception as e:
-            print(f"图片{n} 下载失败：{str(e)}，第{attempt+1}次重试。")
+            print(f"图片{n} 下载失败，第{attempt+1}次重试。")
         if attempt < retries - 1:
             time.sleep(2 ** attempt)
     return False, n, False
