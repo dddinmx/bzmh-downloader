@@ -1,5 +1,6 @@
-import os,re,time,requests,img2pdf,shutil,glob,json
+import os,re,time,requests,shutil,glob,json,img2pdf
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import zipfile
 from PIL import Image
 from natsort import natsorted
 from bs4 import BeautifulSoup
@@ -22,8 +23,30 @@ def title(url):
         title = title_tag.get_text(strip=True)
     if chapter_slot:
         chapter_max = chapter_slot.group(1)
-
     return str(title), int(chapter_max), html_content
+
+def images_to_cbz(folder_path):
+    try:
+        images = []
+        for fname in os.listdir(folder_path):
+            if fname.lower().endswith(('.jpg', '.jpeg', '.png')):
+                images.append(os.path.join(folder_path, fname))
+        # 排序
+        images = natsorted(images)
+        if not images:
+            print(f"文件夹 {folder_path} 中没有图片")
+            return
+        cbz_name = f"{os.path.basename(folder_path)}.cbz"
+        with zipfile.ZipFile(cbz_name, 'w') as cbz_file:
+            for image_path in images:
+                cbz_file.write(
+                    image_path,
+                    arcname=os.path.basename(image_path),
+                    compress_type=zipfile.ZIP_STORED
+                )
+        print(f"成功生成CBZ：{cbz_name}")
+    except Exception as e:
+        print(f"CBZ生成失败：{str(e)}")
 
 def images_to_pdf(folder_path):
     try:
@@ -31,44 +54,31 @@ def images_to_pdf(folder_path):
         for fname in os.listdir(folder_path):
             if fname.lower().endswith(('.jpg', '.jpeg', '.png')):
                 images.append(os.path.join(folder_path, fname))
-        
         images = natsorted(images)
-        
         if not images:
             print(f"文件夹 {folder_path} 中没有图片")
             return
-
-        # 创建PDF文件名
         pdf_name = f"{os.path.basename(folder_path)}.pdf"
-        
-        # 检查并调整图片尺寸
         valid_images = []
         for image_path in images:
             with Image.open(image_path) as img:
                 width, height = img.size
-                # 检查图片尺寸是否在允许范围内（3到14400点）
                 if width < 3 or height < 3 or width > 14400 or height > 14400:
                     print(f"图片 {image_path} 的尺寸不在允许范围内（{width}x{height}），跳过该图片")
                     continue
                 valid_images.append(image_path)
-        
         if not valid_images:
             print("没有有效的图片可以生成PDF")
             return
-
-        # 转换图片为PDF
         with open(pdf_name, "wb") as f:
             f.write(img2pdf.convert(valid_images))
-        
         print(f"成功生成PDF：{pdf_name}")
-
     except Exception as e:
         print(f"PDF生成失败：{str(e)}")
 
 def download_image(session, base_url, save_dir, n, retries=3):
     img_url = base_url.format(n)
     file_path = os.path.join(save_dir, f"{n}.jpg")
-    
     for attempt in range(retries):
         try:
             with session.get(img_url, stream=True, timeout=15) as response:
@@ -76,39 +86,34 @@ def download_image(session, base_url, save_dir, n, retries=3):
                     with open(file_path, 'wb') as f:
                         for chunk in response.iter_content(2048):
                             f.write(chunk)
-                    return True, n, False  # 成功，无需停止
+                    return True, n, False
                 else:
                     if response.status_code == 404:
-                        return False, n, True  # 需要停止下载
+                        return False, n, True
                     else:
                         print(f"图片{n} 下载失败，状态码：{response.status_code}，第{attempt+1}次重试。")
         except Exception as e:
             print(f"图片{n} 下载失败：{str(e)}，第{attempt+1}次重试。")
-        # 指数退避等待
         if attempt < retries - 1:
             time.sleep(2 ** attempt)
-    return False, n, False  # 失败但无需停止
+    return False, n, False
 
-def crawl_chapter(chapter_url, save_prefix):
+def crawl_chapter(chapter_url, save_prefix, comic_format):
     save_dir = f"{save_prefix:02d}"
     os.makedirs(save_dir, exist_ok=True)
-
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
-    
     with requests.Session() as session:
         try:
             response = session.get(chapter_url, headers=headers, timeout=10)
             if response.status_code != 200:
                 print(f"章节页访问失败：{response.status_code}")
                 return
-            
             match = re.search(r'(https?://[^/]+/scomic/[^/]+/\d+/[^/]+/1\.jpg)', response.text)
             if not match:
                 print("未找到1.jpg的图片地址")
                 return
-            
             base_url = match.group(1).replace("1.jpg", "{}.jpg")
             print(f"开始下载章节：{save_dir}")
 
@@ -116,14 +121,12 @@ def crawl_chapter(chapter_url, save_prefix):
             success_count = 0
             n = 1
             stop_flag = False
-
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 while not stop_flag:
                     futures = []
                     for _ in range(max_workers * 2):
                         futures.append(executor.submit(download_image, session, base_url, save_dir, n))
                         n += 1
-
                     for future in as_completed(futures):
                         success, num, stop_download = future.result()
                         if success:
@@ -134,29 +137,17 @@ def crawl_chapter(chapter_url, save_prefix):
                                 stop_flag = True
                                 executor.shutdown(wait=False)
                                 break
-
                     time.sleep(0.5)
-
-            print(f"章节 {save_dir} 下载完成，开始生成PDF...")
-            images_to_pdf(save_dir)
-
+            if  comic_format == 1:
+                print(f"章节 {save_dir} 下载完成，开始生成PDF...")
+                images_to_pdf(save_dir)
+            elif comic_format == 2:
+                print(f"章节 {save_dir} 下载完成，开始生成CBZ...")
+                images_to_cbz(save_dir)
         except Exception as e:
             print(f"章节处理异常：{str(e)}")
 
-if __name__ == "__main__":
-    banner = r"""
-    bzmhbzmhbzmhbzmhbzmhbzmhbzmh
-    bzmh                  bzmh
-    bzmh  bzmh  bzmh  bzmh  bzmh
-    bzmh                  bzmh
-    bzmhbzmhbzmhbzmhbzmhbzmhbzmh
-    """
-    print(banner)
-    print ("auther by dddinmx"+"\n"+"Github: https://github.com/dddinmx/bzmh-downloader")
-    print ("漫画地址获取: https://cn.baozimhcn.com/"+"\n"+"              https://www.baozimh.com/")
-    print ("\n"+"1 整本下载"+"\n"+"2 更新")
-    model = str(input("选择: "))
-
+def main(model, comic_format):
     if model == "1":
         input_url = str(input("\n"+"输入漫画地址: "))
         base_chapter_url = input_url.replace("/comic/", "/comic/chapter/") + "/0_{}.html"
@@ -192,9 +183,18 @@ if __name__ == "__main__":
                 response = requests.head(url, headers=headers)
                 if response.status_code == 200:
                     print(f"\n开始处理第 {chapter_num+1} 章")
-                    crawl_chapter(url, chapter_num+1)
+                    crawl_chapter(url, chapter_num+1, comic_format)
                     save_dir = f"{chapter_num+1:02d}"
-                    shutil.rmtree(save_dir)
+                    try:
+                        shutil.rmtree(save_dir)
+                        #subprocess.run(["sudo", "rm", "-rf", save_dir], check=True)
+                    except FileNotFoundError:
+                        print(f"目录 {save_dir} 不存在，无需删除")
+                    except Exception as e:
+                        print(f"删除目录时发生错误: {e}")
+                    cbz_files = glob.glob(os.path.join(".", "*.cbz"))
+                    for cbz_file in cbz_files:
+                        shutil.move(cbz_file, os.path.join(".", folder))
                     pdf_files = glob.glob(os.path.join(".", "*.pdf"))
                     for pdf_file in pdf_files:
                         shutil.move(pdf_file, "./"+folder)
@@ -207,16 +207,24 @@ if __name__ == "__main__":
                 response = requests.head(url, headers=headers)
                 if response.status_code == 200:
                     print(f"\n开始处理第 {chapter_num+1} 章")
-                    crawl_chapter(url, chapter_num+1)
+                    crawl_chapter(url, chapter_num+1, comic_format)
                     save_dir = f"{chapter_num+1:02d}"
-                    shutil.rmtree(save_dir)
+                    try:
+                        shutil.rmtree(save_dir)
+                        #subprocess.run(["sudo", "rm", "-rf", save_dir], check=True)
+                    except FileNotFoundError:
+                        print(f"目录 {save_dir} 不存在，无需删除")
+                    except Exception as e:
+                        print(f"删除目录时发生错误: {e}")
+                    cbz_files = glob.glob(os.path.join(".", "*.cbz"))
+                    for cbz_file in cbz_files:
+                        shutil.move(cbz_file, os.path.join(".", folder))
                     pdf_files = glob.glob(os.path.join(".", "*.pdf"))
                     for pdf_file in pdf_files:
                         shutil.move(pdf_file, "./"+folder)
                 else:
                     print(f"章节{chapter_num+1}不存在，停止检测")
                     break
-
     if model == "2":
         path = './'  
         folders = []
@@ -228,10 +236,10 @@ if __name__ == "__main__":
             print(folder)
         comic_name = input("输入要更新的漫画名: ")
         comic_path = "./"+comic_name
-        pdf_files = [f for f in os.listdir(comic_path) if f.endswith('.pdf')]
+        cbz_files = [f for f in os.listdir(comic_path) if f.endswith('.cbz')]
         numbers = []
-        for pdf_file in pdf_files:
-            match = re.search(r'\d+', pdf_file)
+        for cbz_file in cbz_files:
+            match = re.search(r'\d+', cbz_file)
             if match:
                 numbers.append(int(match.group()))
         if numbers:
@@ -242,7 +250,6 @@ if __name__ == "__main__":
         with open(json_file_path, "r", encoding="utf-8") as json_file:
             data = json.load(json_file)
         update_url = data[comic_name]
-
         # 更新漫画
         base_chapter_url = update_url.replace("/comic/", "/comic/chapter/") + "/0_{}.html"
         headers = {
@@ -263,9 +270,19 @@ if __name__ == "__main__":
                 response = requests.head(url, headers=headers)
                 if response.status_code == 200:
                     print(f"\n开始处理第 {chapter_num+1} 章")
-                    crawl_chapter(url, chapter_num+1)
+                    crawl_chapter(url, chapter_num+1, comic_format)
                     save_dir = f"{chapter_num+1:02d}"
-                    shutil.rmtree(save_dir)
+                    try:
+                        shutil.rmtree(save_dir)
+                        #subprocess.run(["sudo", "rm", "-rf", save_dir], check=True)
+                    except FileNotFoundError:
+                        print(f"目录 {save_dir} 不存在，无需删除")
+                    except Exception as e:
+                        print(f"删除目录时发生错误: {e}")
+                    # 后续操作
+                    cbz_files = glob.glob(os.path.join(".", "*.cbz"))
+                    for cbz_file in cbz_files:
+                        shutil.move(cbz_file, os.path.join(".", folder))
                     pdf_files = glob.glob(os.path.join(".", "*.pdf"))
                     for pdf_file in pdf_files:
                         shutil.move(pdf_file, "./"+folder)
@@ -281,9 +298,18 @@ if __name__ == "__main__":
                 response = requests.head(url, headers=headers)
                 if response.status_code == 200:
                     print(f"\n开始处理第 {chapter_num+1} 章")
-                    crawl_chapter(url, chapter_num+1)
+                    crawl_chapter(url, chapter_num+1, comic_format)
                     save_dir = f"{chapter_num+1:02d}"
-                    shutil.rmtree(save_dir)
+                    try:
+                        shutil.rmtree(save_dir)
+                        #subprocess.run(["sudo", "rm", "-rf", save_dir], check=True)
+                    except FileNotFoundError:
+                        print(f"目录 {save_dir} 不存在，无需删除")
+                    except Exception as e:
+                        print(f"删除目录时发生错误: {e}")
+                    cbz_files = glob.glob(os.path.join(".", "*.cbz"))
+                    for cbz_file in cbz_files:
+                        shutil.move(cbz_file, os.path.join(".", folder))
                     pdf_files = glob.glob(os.path.join(".", "*.pdf"))
                     for pdf_file in pdf_files:
                         shutil.move(pdf_file, "./"+folder)
@@ -294,3 +320,23 @@ if __name__ == "__main__":
             print ("未找到更新.")
     else:
         print ("退出.")
+
+#-------------------------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    banner = r"""
+    bzmhbzmhbzmhbzmhbzmhbzmhbzmh
+    bzmh                  bzmh
+    bzmh  bzmh  bzmh  bzmh  bzmh
+    bzmh                  bzmh
+    bzmhbzmhbzmhbzmhbzmhbzmhbzmh
+    """
+    print(banner)
+    print ("auther by dddinmx"+"\n"+"Github: https://github.com/dddinmx/bzmh-downloader")
+    print ("漫画地址获取: https://cn.baozimhcn.com/"+"\n"+"              https://www.baozimh.com/")
+    print ("\n"+"[1] 整本下载    [2] 更新")
+    model = str(input("选择: "))
+    print("\n"+"[1] PDF    [2] CBZ")
+    comic_format = input("选择生成格式: ")
+    main(model, int(comic_format))
+    
