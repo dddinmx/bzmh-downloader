@@ -3,7 +3,7 @@
 <a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/Version-bzmh_downloader%201.3-yellow"></a>
 ![GitHub Repo stars](https://img.shields.io/github/stars/dddinmx/bzmh-downloader?color=gree)  
 下载包子漫画内容。  
-开发环境: Python 3.12.4
+开发环境: Python 3.12
 
 ### 🉑 安装使用  
 ``安装方法: git clone https://github.com/dddinmx/bzmh-downloader.git``  
