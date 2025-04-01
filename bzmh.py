@@ -10,7 +10,7 @@ from datetime import datetime
 from tqdm import tqdm
 
 CONFIG = {
-    'max_workers': 6,     # 并发线程数
+    'max_workers': 2,
     'request_timeout': 20,
     'retry_times': 3,
     'queue_buffer': 10,
@@ -130,7 +130,7 @@ def crawl_chapter(chapter_url, save_prefix, comic_format):
             base_url = match.group(1).replace("1.jpg", "{}.jpg")
             safe_print(f"开始下载章节：{save_dir}")
 
-            max_workers = 6
+            max_workers = 2
             success_count = 0
             n = 1
             stop_flag = False
