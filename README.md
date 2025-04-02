@@ -3,6 +3,7 @@
 <a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/python-3.8%2B-8A2BE2"></a>
 <a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/Version-bzmh_downloader%201.3-yellow"></a>
 ![GitHub Repo stars](https://img.shields.io/github/stars/dddinmx/bzmh-downloader?color=gree)  
+![Clones](https://img.shields.io/endpoint?url=https://mamamia.lmx.asia:83/clones_badge.json)  
 下载包子漫画内容。  
 开发环境: Python 3.12
 
