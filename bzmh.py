@@ -90,11 +90,11 @@ def images_to_pdf(folder_path):
         safe_print(f"PDF生成失败：{str(e)}")
 
 def download_image(session, base_url, save_dir, n, retries=CONFIG['retry_times']):
-    # 模拟阅读行为，在下载前随机延迟
-    time.sleep(random.uniform(*CONFIG['delay_range']))
+    # 模拟阅读行为，随机延迟
     img_url = base_url.format(n)
     file_path = os.path.join(save_dir, f"{n}.jpg")
     for attempt in range(retries):
+        time.sleep(random.uniform(*CONFIG['delay_range']))
         try:
             with session.get(img_url, stream=True, timeout=15) as response:
                 if response.status_code == 200:
