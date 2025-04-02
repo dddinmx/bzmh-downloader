@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # auther by lmx
-import os,re,time,requests,shutil,glob,json,img2pdf
+import os, re, time, requests, shutil, glob, json, img2pdf, random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import zipfile
 from PIL import Image
@@ -14,7 +14,7 @@ CONFIG = {
     'request_timeout': 20,
     'retry_times': 3,
     'queue_buffer': 10,
-    'delay_range': (0.1, 0.5)
+    'delay_range': (0.1, 0.5)  # 延迟范围（秒）
 }
 
 green = "\033[1;32m"
@@ -27,7 +27,7 @@ def safe_print(message, end="\n", flush=False):
     tqdm.write(message, end=end)
 
 def title(url):
-    response = requests.get(url,timeout=5)
+    response = requests.get(url, timeout=5)
     html_content = response.text
     soup = BeautifulSoup(html_content, "html.parser")
     title_tag = soup.find("h1", class_="comics-detail__title")
@@ -89,7 +89,9 @@ def images_to_pdf(folder_path):
     except Exception as e:
         safe_print(f"PDF生成失败：{str(e)}")
 
-def download_image(session, base_url, save_dir, n, retries=3):
+def download_image(session, base_url, save_dir, n, retries=CONFIG['retry_times']):
+    # 模拟阅读行为，在下载前随机延迟
+    time.sleep(random.uniform(*CONFIG['delay_range']))
     img_url = base_url.format(n)
     file_path = os.path.join(save_dir, f"{n}.jpg")
     for attempt in range(retries):
@@ -104,9 +106,9 @@ def download_image(session, base_url, save_dir, n, retries=3):
                     if response.status_code == 404:
                         return False, n, True
                     else:
-                        safe_print(f"图片{n} "+red+"下载失败"+reset+f"，第{attempt+1}次重试。")
+                        safe_print(f"图片{n} " + red + "下载失败" + reset + f"，第{attempt+1}次重试。")
         except Exception as e:
-            safe_print(f"图片{n} "+red+"下载失败"+reset+f"，第{attempt+1}次重试。")
+            safe_print(f"图片{n} " + red + "下载失败" + reset + f"，第{attempt+1}次重试。")
         if attempt < retries - 1:
             time.sleep(2 ** attempt)
     return False, n, False
@@ -125,12 +127,12 @@ def crawl_chapter(chapter_url, save_prefix, comic_format):
                 return
             match = re.search(r'(https?://[^/]+/scomic/[^/]+/\d+/[^/]+/1\.jpg)', response.text)
             if not match:
-                safe_print(red+"未找到1.jpg的图片地址"+reset)
+                safe_print(red + "未找到1.jpg的图片地址" + reset)
                 return
             base_url = match.group(1).replace("1.jpg", "{}.jpg")
             safe_print(f"开始下载章节：{save_dir}")
 
-            max_workers = 2
+            max_workers = CONFIG['max_workers']
             success_count = 0
             n = 1
             stop_flag = False
@@ -144,14 +146,14 @@ def crawl_chapter(chapter_url, save_prefix, comic_format):
                         success, num, stop_download = future.result()
                         if success:
                             success_count += 1
-                            #safe_print(f"Downloaded：{save_dir}/{num}.jpg")
                         else:
                             if stop_download:
                                 stop_flag = True
                                 executor.shutdown(wait=False)
                                 break
-                    time.sleep(0.5)
-            if  comic_format == 1:
+                    # 批次处理后随机延迟，模拟人阅读时的间隔
+                    time.sleep(random.uniform(*CONFIG['delay_range']))
+            if comic_format == 1:
                 safe_print(f"章节 {save_dir} 下载完成，开始生成PDF...")
                 images_to_pdf(save_dir)
             elif comic_format == 2:
@@ -162,7 +164,7 @@ def crawl_chapter(chapter_url, save_prefix, comic_format):
 
 def pdf_cbz_update(chapter_max, max_number_pdf, folder, base_chapter_url, headers, comic_format):
     now_1 = datetime.now().strftime("%H:%M:%S")
-    safe_print (green+"["+now_1+"]"+"  Start  "+folder+reset)
+    safe_print(green + "[" + now_1 + "]" + "  Start  " + folder + reset)
     with tqdm(
         total=chapter_max - max_number_pdf,
         desc="进度",
@@ -178,7 +180,7 @@ def pdf_cbz_update(chapter_max, max_number_pdf, folder, base_chapter_url, header
                 safe_print("\033[s", end="", flush=True)
                 safe_print(f"开始处理第 {chapter_num+1} 章")
                 crawl_chapter(url, chapter_num+1, comic_format)
-                time.sleep(1)
+                time.sleep(60)
                 safe_print("\033[u\033[J", end="", flush=True)
                 save_dir = f"{chapter_num+1:02d}"
                 try:
@@ -187,13 +189,12 @@ def pdf_cbz_update(chapter_max, max_number_pdf, folder, base_chapter_url, header
                     safe_print(f"目录 {save_dir} 不存在，无需删除")
                 except Exception as e:
                     safe_print(f"删除目录时发生错误: {e}")
-                # 后续操作
                 cbz_files = glob.glob(os.path.join(".", "*.cbz"))
                 for cbz_file in cbz_files:
                     shutil.move(cbz_file, os.path.join(".", folder))
                 pdf_files = glob.glob(os.path.join(".", "*.pdf"))
                 for pdf_file in pdf_files:
-                    shutil.move(pdf_file, "./"+folder)
+                    shutil.move(pdf_file, "./" + folder)
             else:
                 safe_print(f"章节{chapter_num+1}不存在，停止检测")
                 break
@@ -203,7 +204,7 @@ def pdf_cbz_update(chapter_max, max_number_pdf, folder, base_chapter_url, header
 
 def main(model, comic_format):
     if model == "1":
-        input_url = str(input("\n"+"输入漫画地址: "))
+        input_url = str(input("\n" + "输入漫画地址: "))
         base_chapter_url = input_url.replace("/comic/", "/comic/chapter/") + "/0_{}.html"
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -229,9 +230,9 @@ def main(model, comic_format):
         matches = re.findall(pattern, html_content)
         if matches:
             chapter_max = max(map(int, matches))
-            safe_print ("漫画章数: "+str(chapter_max))
+            safe_print("漫画章数: " + str(chapter_max))
         now_1 = datetime.now().strftime("%H:%M:%S")
-        safe_print (green+"["+now_1+"]"+"  Start  "+folder+reset)
+        safe_print(green + "[" + now_1 + "]" + "  Start  " + folder + reset)
         with tqdm(
             total=chapter_max - 0,
             desc="进度",
@@ -247,7 +248,8 @@ def main(model, comic_format):
                     safe_print("\033[s", end="", flush=True)
                     safe_print(f"开始处理第 {chapter_num+1} 章")
                     crawl_chapter(url, chapter_num+1, comic_format)
-                    time.sleep(1)
+                    # 每章处理后随机延迟
+                    time.sleep(60)
                     safe_print("\033[u\033[J", end="", flush=True)
                     save_dir = f"{chapter_num+1:02d}"
                     try:
@@ -261,22 +263,23 @@ def main(model, comic_format):
                         shutil.move(cbz_file, os.path.join(".", folder))
                     pdf_files = glob.glob(os.path.join(".", "*.pdf"))
                     for pdf_file in pdf_files:
-                        shutil.move(pdf_file, "./"+folder)
+                        shutil.move(pdf_file, "./" + folder)
                 else:
                     safe_print(f"章节{chapter_num+1}不存在，停止检测")
                     break
                 main_pbar.update(1)  # 每完成一个章节更新
                 main_pbar.set_postfix_str(f"当前章节 {chapter_num+1}")
             now_2 = datetime.now().strftime("%H:%M:%S")
-            safe_print ("\n"+green+"["+now_2+"]"+"  End"+reset)
+            safe_print("\n" + green + "[" + now_2 + "]" + "  End" + reset)
             time_format = "%H:%M:%S"
             time_1 = datetime.strptime(now_1, time_format)
             time_2 = datetime.strptime(now_2, time_format)
             time_diff = time_2 - time_1
-            safe_print ("总耗时: "+ str(time_diff))
-            for i in range(1):safe_print("\033[F\033[J", end="") 
+            safe_print("总耗时: " + str(time_diff))
+            for i in range(1): 
+                safe_print("\033[F\033[J", end="")
     elif model == "2":
-        path = './'  
+        path = './'
         folders = []
         with os.scandir(path) as entries:
             for entry in entries:
@@ -285,7 +288,7 @@ def main(model, comic_format):
         for folder in sorted(folders):
             safe_print(folder)
         comic_name = input("输入要更新的漫画名: ")
-        comic_path = "./"+comic_name
+        comic_path = "./" + comic_name
         cbz_files = [f for f in os.listdir(comic_path) if f.endswith('.cbz')]
         pdf_files = [f for f in os.listdir(comic_path) if f.endswith('.pdf')]
         numbers = []
@@ -320,33 +323,35 @@ def main(model, comic_format):
         matches = re.findall(pattern, html_content)
         if matches:
             chapter_max = max(map(int, matches))
-            safe_print ("漫画章数: "+str(chapter_max))
+            safe_print("漫画章数: " + str(chapter_max))
         if comic_format == 1:
             now_1 = pdf_cbz_update(chapter_max, max_number_pdf, folder, base_chapter_url, headers, comic_format)
             now_2 = datetime.now().strftime("%H:%M:%S")
-            safe_print (green+"["+now_2+"]"+"  End"+reset)
+            safe_print(green + "[" + now_2 + "]" + "  End" + reset)
             time_format = "%H:%M:%S"
             time_1 = datetime.strptime(now_1, time_format)
             time_2 = datetime.strptime(now_2, time_format)
             time_diff = time_2 - time_1
-            safe_print ("总耗时: "+ str(time_diff))
-            for i in range(1):safe_print("\033[F\033[J", end="")
+            safe_print("总耗时: " + str(time_diff))
+            for i in range(1): 
+                safe_print("\033[F\033[J", end="")
         if comic_format == 2:
             now_1 = pdf_cbz_update(chapter_max, max_number, folder, base_chapter_url, headers, comic_format)
             now_2 = datetime.now().strftime("%H:%M:%S")
-            safe_print (green+"["+now_2+"]"+"  End"+reset)
+            safe_print(green + "[" + now_2 + "]" + "  End" + reset)
             time_format = "%H:%M:%S"
             time_1 = datetime.strptime(now_1, time_format)
             time_2 = datetime.strptime(now_2, time_format)
             time_diff = time_2 - time_1
-            safe_print ("总耗时: "+ str(time_diff))
-            for i in range(1):safe_print("\033[F\033[J", end="")
+            safe_print("总耗时: " + str(time_diff))
+            for i in range(1): 
+                safe_print("\033[F\033[J", end="")
         if max_number < chapter_max:
-            safe_print ("找到更新,开始下载."+"\n")
+            safe_print("找到更新,开始下载." + "\n")
             if not os.path.exists(folder):
                 os.makedirs(folder)
             now_1 = datetime.now().strftime("%H:%M:%S")
-            safe_print (green+"["+now_1+"]"+"  Start  "+folder+reset)
+            safe_print(green + "[" + now_1 + "]" + "  Start  " + folder + reset)
             with tqdm(
                 total=chapter_max - max_number,
                 desc="进度",
@@ -361,7 +366,7 @@ def main(model, comic_format):
                     if response.status_code == 200:
                         safe_print(f"开始处理第 {chapter_num+1} 章")
                         crawl_chapter(url, chapter_num+1, comic_format)
-                        time.sleep(1)
+                        time.sleep(60)
                         save_dir = f"{chapter_num+1:02d}"
                         try:
                             shutil.rmtree(save_dir)
@@ -374,41 +379,41 @@ def main(model, comic_format):
                             shutil.move(cbz_file, os.path.join(".", folder))
                         pdf_files = glob.glob(os.path.join(".", "*.pdf"))
                         for pdf_file in pdf_files:
-                            shutil.move(pdf_file, "./"+folder)
+                            shutil.move(pdf_file, "./" + folder)
                     else:
                         safe_print(f"章节{chapter_num+1}不存在，停止检测")
                         break
                     main_pbar.update(1)
                     main_pbar.set_postfix_str(f"当前章节 {chapter_num+1}")
             now_2 = datetime.now().strftime("%H:%M:%S")
-            safe_print (green+"["+now_2+"]"+"  End"+reset)
+            safe_print(green + "[" + now_2 + "]" + "  End" + reset)
             time_format = "%H:%M:%S"
             time_1 = datetime.strptime(now_1, time_format)
             time_2 = datetime.strptime(now_2, time_format)
             time_diff = time_2 - time_1
-            safe_print ("总耗时: "+ str(time_diff))
-            for i in range(1):safe_print("\033[F\033[J", end="")
+            safe_print("总耗时: " + str(time_diff))
+            for i in range(1): 
+                safe_print("\033[F\033[J", end="")
         else:
-            safe_print ("未找到更新.")
+            safe_print("未找到更新.")
     else:
-        
-        safe_print ("退出.")
+        safe_print("退出.")
 
 #-------------------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     os.system('cls' if os.name == 'nt' else 'clear')
-    banner = dark_gray+r"""
+    banner = dark_gray + r"""
     bzmhbzmhbzmhbzmhbzmhbzmhbzmh
     bzmh                  bzmh
     bzmh  bzmh  bzmh  bzmh  bzmh
     bzmh                  bzmh
     bzmhbzmhbzmhbzmhbzmhbzmhbzmh
-    """+reset
+    """ + reset
     safe_print(banner)
-    safe_print ("      auther by "+light_red+"dddinmx"+reset+"\n"+dark_gray+"      Github: https://github.com/dddinmx/bzmh-downloader"+reset)
-    safe_print (dark_gray+"漫画地址获取: https://cn.baozimhcn.com/"+"\n"+"              https://www.baozimh.com/"+reset)
-    safe_print ("\n"+"[1] 整本下载    [2] 更新")
+    safe_print("      auther by " + light_red + "dddinmx" + reset + "\n" + dark_gray + "      Github: https://github.com/dddinmx/bzmh-downloader" + reset)
+    safe_print(dark_gray + "漫画地址获取: https://cn.baozimhcn.com/" + "\n" + "              https://www.baozimh.com/" + reset)
+    safe_print("\n" + "[1] 整本下载    [2] 更新")
     model = str(input("选择: "))
     safe_print("[1] PDF    [2] CBZ")
     comic_format = input("选择保存格式: ")
