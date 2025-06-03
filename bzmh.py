@@ -90,7 +90,7 @@ def images_to_pdf(folder_path):
         safe_print(f"PDF生成失败：{str(e)}")
 
 def download_image(session, base_url, save_dir, n, retries=CONFIG['retry_times']):
-    # 模拟阅读行为，随机延迟
+    # 模拟阅读行为，在下载前随机延迟
     img_url = base_url.format(n)
     file_path = os.path.join(save_dir, f"{n}.jpg")
     for attempt in range(retries):
@@ -180,7 +180,7 @@ def pdf_cbz_update(chapter_max, max_number_pdf, folder, base_chapter_url, header
                 safe_print("\033[s", end="", flush=True)
                 safe_print(f"开始处理第 {chapter_num+1} 章")
                 crawl_chapter(url, chapter_num+1, comic_format)
-                time.sleep(30)
+                time.sleep(20)
                 safe_print("\033[u\033[J", end="", flush=True)
                 save_dir = f"{chapter_num+1:02d}"
                 try:
@@ -249,7 +249,7 @@ def main(model, comic_format):
                     safe_print(f"开始处理第 {chapter_num+1} 章")
                     crawl_chapter(url, chapter_num+1, comic_format)
                     # 每章处理后随机延迟
-                    time.sleep(30)
+                    time.sleep(20)
                     safe_print("\033[u\033[J", end="", flush=True)
                     save_dir = f"{chapter_num+1:02d}"
                     try:
@@ -366,7 +366,7 @@ def main(model, comic_format):
                     if response.status_code == 200:
                         safe_print(f"开始处理第 {chapter_num+1} 章")
                         crawl_chapter(url, chapter_num+1, comic_format)
-                        time.sleep(30)
+                        time.sleep(20)
                         save_dir = f"{chapter_num+1:02d}"
                         try:
                             shutil.rmtree(save_dir)
