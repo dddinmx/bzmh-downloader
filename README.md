@@ -24,8 +24,9 @@
 <img width="951" alt="image" src="https://github.com/user-attachments/assets/b6773b77-76e9-4922-b7c9-7d5a271d0704" />  
 
 
+## Star History
 
-
+[![Star History Chart](https://api.star-history.com/svg?repos=dddinmx/hxs-downloader,dddinmx/bzmh-downloader&type=Date)](https://www.star-history.com/#dddinmx/hxs-downloader&dddinmx/bzmh-downloader&Date)
 
 
 
