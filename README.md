@@ -25,8 +25,8 @@
 
 
 ## Star History
+![star-history-2025622](https://github.com/user-attachments/assets/7e5e7f91-a419-45bb-a6fb-664c6955c41d)
 
-[![Star History Chart](https://api.star-history.com/svg?repos=dddinmx/hxs-downloader,dddinmx/bzmh-downloader&type=Date)](https://www.star-history.com/#dddinmx/hxs-downloader&dddinmx/bzmh-downloader&Date)
 
 
 
