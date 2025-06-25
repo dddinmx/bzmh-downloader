@@ -32,7 +32,7 @@ pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 python3 bzmh-downloader.py
 ```
 
-# 📚 韩小肆韩漫 漫画下载器
+# 📚 漫小肆韩漫 漫画下载器
 [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=dddinmx&repo=mxs-downloader)](https://github.com/dddinmx/mxs-downloader)
 
 ## Star History
