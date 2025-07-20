@@ -36,7 +36,14 @@ python3 bzmh-downloader.py
 [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=dddinmx&repo=mxs-downloader)](https://github.com/dddinmx/mxs-downloader)
 
 ## Star History
-![star-history-2025622](https://github.com/user-attachments/assets/7e5e7f91-a419-45bb-a6fb-664c6955c41d)
+
+<a href="https://www.star-history.com/#dddinmx/bzmh-downloader&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=dddinmx/bzmh-downloader&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=dddinmx/bzmh-downloader&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=dddinmx/bzmh-downloader&type=Date" />
+ </picture>
+</a>
 
 
 
