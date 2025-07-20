@@ -366,7 +366,7 @@ def main(model, comic_format):
                     if response.status_code == 200:
                         safe_print(f"开始处理第 {chapter_num+1} 章")
                         crawl_chapter(url, chapter_num+1, comic_format)
-                        time.sleep(20)
+                        time.sleep(40)
                         save_dir = f"{chapter_num+1:02d}"
                         try:
                             shutil.rmtree(save_dir)
