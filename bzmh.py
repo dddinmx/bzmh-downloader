@@ -180,7 +180,7 @@ def pdf_cbz_update(chapter_max, max_number_pdf, folder, base_chapter_url, header
                 safe_print("\033[s", end="", flush=True)
                 safe_print(f"开始处理第 {chapter_num+1} 章")
                 crawl_chapter(url, chapter_num+1, comic_format)
-                time.sleep(40)
+                time.sleep(60)
                 safe_print("\033[u\033[J", end="", flush=True)
                 save_dir = f"{chapter_num+1:02d}"
                 try:
@@ -249,7 +249,7 @@ def main(model, comic_format):
                     safe_print(f"开始处理第 {chapter_num+1} 章")
                     crawl_chapter(url, chapter_num+1, comic_format)
                     # 每章处理后随机延迟
-                    time.sleep(40)
+                    time.sleep(60)
                     safe_print("\033[u\033[J", end="", flush=True)
                     save_dir = f"{chapter_num+1:02d}"
                     try:
@@ -366,7 +366,7 @@ def main(model, comic_format):
                     if response.status_code == 200:
                         safe_print(f"开始处理第 {chapter_num+1} 章")
                         crawl_chapter(url, chapter_num+1, comic_format)
-                        time.sleep(40)
+                        time.sleep(60)
                         save_dir = f"{chapter_num+1:02d}"
                         try:
                             shutil.rmtree(save_dir)
