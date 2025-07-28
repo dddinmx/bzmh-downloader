@@ -35,6 +35,18 @@ python3 bzmh-downloader.py
 # 📚 漫小肆韩漫 漫画下载器
 [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=dddinmx&repo=mxs-downloader)](https://github.com/dddinmx/mxs-downloader)
 
+# ⚠️ 免责声明
+
+- 本工具仅作学习、研究、交流使用，使用本工具的用户应自行承担风险
+- 作者不对使用本工具导致的任何损失、法律纠纷或其他后果负责
+- 作者不对用户使用本工具的行为负责，包括但不限于用户违反法律或任何第三方权益的行为
+
+# 💬 其他
+
+任何使用中遇到的问题、任何希望添加的功能，都欢迎提交issue或开discussion交流，我会尽力解决。  
+关于IP 被封问题目前已解决，最新测试能稳定下载。  
+<img width="1342" height="1046" alt="image" src="https://github.com/user-attachments/assets/f6fd1055-ec7b-4fee-a2b7-aa5844b6f0e8" />
+
 ## Star History
 
 <a href="https://www.star-history.com/#dddinmx/bzmh-downloader&Date">
