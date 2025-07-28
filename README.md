@@ -45,18 +45,6 @@ python3 bzmh-downloader.py
 
 任何使用中遇到的问题、任何希望添加的功能，都欢迎提交issue或开discussion交流，我会尽力解决。  
 关于IP 被封问题目前已解决，最新测试能稳定下载。  
-<img width="1342" height="1046" alt="image" src="https://github.com/user-attachments/assets/f6fd1055-ec7b-4fee-a2b7-aa5844b6f0e8" />
-
-## Star History
-
-<a href="https://www.star-history.com/#dddinmx/bzmh-downloader&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=dddinmx/bzmh-downloader&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=dddinmx/bzmh-downloader&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=dddinmx/bzmh-downloader&type=Date" />
- </picture>
-</a>
-
-
+<img width="1322" height="728" alt="image" src="https://github.com/user-attachments/assets/753f4482-99ef-4dbb-9cad-351128a7b36f" />
 
 
