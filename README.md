@@ -1,8 +1,12 @@
 # 📚 bzmh-downloader
-<a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/crawler-bule"></a>
-<a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/python-3.8%2B-8A2BE2"></a>
-<a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/Version-1.3.1-yellow"></a>
-![GitHub Repo stars](https://img.shields.io/github/stars/dddinmx/bzmh-downloader?color=gree)  
+![Head diagram](https://github.com/user-attachments/assets/e960c38a-cec4-450f-8cc1-75582dff2f1d)
+<p align="center">
+  <a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/crawler-bule"></a>
+  <a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/python-3.8%2B-8A2BE2"></a>
+  <a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/Version-1.3.3-yellow"></a>
+  <a href="https://github.com/dddinmx/hxs-downloader/"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/dddinmx/bzmh-downloader?color=gree"></a>
+</p>
+
 包子漫画漫画下载器，**免费下载收费漫画**，基于 Python3 开发，生成 pdf/cbz 漫画格式。  
 
 **如果本项目对你有帮助，欢迎点个 Star⭐ 支持！你的支持是我持续更新维护的动力🙏**
