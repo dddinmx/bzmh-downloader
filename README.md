@@ -33,7 +33,7 @@ pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 
 #### 3.运行
 ```
-python3 bzmh-downloader.py
+python3 bzmh-downloader.py   (为了下载稳定，请关闭代理软件使用!)
 ```
 
 # 📚 漫小肆韩漫 漫画下载器
