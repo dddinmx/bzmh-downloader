@@ -49,7 +49,7 @@ def images_to_cbz(folder_path):
         if not images:
             safe_print(f"文件夹 {folder_path} 中没有图片")
             return
-        cbz_name = f"{os.path.basename(folder_path)}.cbz"
+        cbz_name = os.path.join(os.path.dirname(folder_path), f"{os.path.basename(folder_path)}.cbz")
         with zipfile.ZipFile(cbz_name, 'w') as cbz_file:
             for image_path in images:
                 cbz_file.write(
@@ -71,7 +71,7 @@ def images_to_pdf(folder_path):
         if not images:
             safe_print(f"文件夹 {folder_path} 中没有图片")
             return
-        pdf_name = f"{os.path.basename(folder_path)}.pdf"
+        pdf_name = os.path.join(os.path.dirname(folder_path), f"{os.path.basename(folder_path)}.pdf")
         valid_images = []
         for image_path in images:
             with Image.open(image_path) as img:
@@ -113,8 +113,8 @@ def download_image(session, base_url, save_dir, n, retries=CONFIG['retry_times']
             time.sleep(2 ** attempt)
     return False, n, False
 
-def crawl_chapter(chapter_url, save_prefix, comic_format):
-    save_dir = f"{save_prefix:02d}"
+def crawl_chapter(chapter_url, folder, chapter, comic_format):
+    save_dir = os.path.join(folder, f"{chapter:02d}")
     os.makedirs(save_dir, exist_ok=True)
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -179,22 +179,17 @@ def pdf_cbz_update(chapter_max, max_number_pdf, folder, base_chapter_url, header
             if response.status_code == 200:
                 safe_print("\033[s", end="", flush=True)
                 safe_print(f"开始处理第 {chapter_num+1} 章")
-                crawl_chapter(url, chapter_num+1, comic_format)
-                time.sleep(60)
+                chapter = chapter_num+1
+                crawl_chapter(url, folder, chapter, comic_format)
                 safe_print("\033[u\033[J", end="", flush=True)
-                save_dir = f"{chapter_num+1:02d}"
+                save_dir = os.path.join(folder, f"{chapter:02d}")
                 try:
                     shutil.rmtree(save_dir)
                 except FileNotFoundError:
                     safe_print(f"目录 {save_dir} 不存在，无需删除")
                 except Exception as e:
                     safe_print(f"删除目录时发生错误: {e}")
-                cbz_files = glob.glob(os.path.join(".", "*.cbz"))
-                for cbz_file in cbz_files:
-                    shutil.move(cbz_file, os.path.join(".", folder))
-                pdf_files = glob.glob(os.path.join(".", "*.pdf"))
-                for pdf_file in pdf_files:
-                    shutil.move(pdf_file, "./" + folder)
+                time.sleep(60)
             else:
                 safe_print(f"章节{chapter_num+1}不存在，停止检测")
                 break
@@ -247,23 +242,18 @@ def main(model, comic_format):
                 if response.status_code == 200:
                     safe_print("\033[s", end="", flush=True)
                     safe_print(f"开始处理第 {chapter_num+1} 章")
-                    crawl_chapter(url, chapter_num+1, comic_format)
+                    chapter = chapter_num+1
+                    crawl_chapter(url, folder, chapter, comic_format)
                     # 每章处理后随机延迟
-                    time.sleep(60)
                     safe_print("\033[u\033[J", end="", flush=True)
-                    save_dir = f"{chapter_num+1:02d}"
+                    save_dir = os.path.join(folder, f"{chapter:02d}")
                     try:
                         shutil.rmtree(save_dir)
                     except FileNotFoundError:
                         safe_print(f"目录 {save_dir} 不存在，无需删除")
                     except Exception as e:
                         safe_print(f"删除目录时发生错误: {e}")
-                    cbz_files = glob.glob(os.path.join(".", "*.cbz"))
-                    for cbz_file in cbz_files:
-                        shutil.move(cbz_file, os.path.join(".", folder))
-                    pdf_files = glob.glob(os.path.join(".", "*.pdf"))
-                    for pdf_file in pdf_files:
-                        shutil.move(pdf_file, "./" + folder)
+                    time.sleep(60)
                 else:
                     safe_print(f"章节{chapter_num+1}不存在，停止检测")
                     break
@@ -365,21 +355,17 @@ def main(model, comic_format):
                     response = requests.head(url, headers=headers)
                     if response.status_code == 200:
                         safe_print(f"开始处理第 {chapter_num+1} 章")
-                        crawl_chapter(url, chapter_num+1, comic_format)
-                        time.sleep(60)
-                        save_dir = f"{chapter_num+1:02d}"
+                        chapter = chapter_num+1
+                        crawl_chapter(url, folder, chapter, comic_format)
+                        safe_print("\033[u\033[J", end="", flush=True)
+                        save_dir = os.path.join(folder, f"{chapter:02d}")
                         try:
                             shutil.rmtree(save_dir)
                         except FileNotFoundError:
                             safe_print(f"目录 {save_dir} 不存在，无需删除")
                         except Exception as e:
                             safe_print(f"删除目录时发生错误: {e}")
-                        cbz_files = glob.glob(os.path.join(".", "*.cbz"))
-                        for cbz_file in cbz_files:
-                            shutil.move(cbz_file, os.path.join(".", folder))
-                        pdf_files = glob.glob(os.path.join(".", "*.pdf"))
-                        for pdf_file in pdf_files:
-                            shutil.move(pdf_file, "./" + folder)
+                        time.sleep(60)
                     else:
                         safe_print(f"章节{chapter_num+1}不存在，停止检测")
                         break
@@ -412,7 +398,7 @@ if __name__ == "__main__":
     """ + reset
     safe_print(banner)
     safe_print("      auther by " + light_red + "dddinmx" + reset + "\n" + dark_gray + "      Github: https://github.com/dddinmx/bzmh-downloader" + reset)
-    safe_print(dark_gray + "漫画地址获取: https://cn.baozimhcn.com/" + "\n" + "              https://www.baozimh.com/" + reset)
+    safe_print(dark_gray + "漫画地址获取: https://cn.baozimhcn.com/  (关闭代理使用!)" + reset)
     safe_print("\n" + "[1] 整本下载    [2] 更新")
     model = str(input("选择: "))
     safe_print("[1] PDF    [2] CBZ")
