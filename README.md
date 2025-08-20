@@ -11,6 +11,8 @@
 
 **如果本项目对你有帮助，欢迎点个 Star⭐ 支持！你的支持是我持续更新维护的动力🙏**
 
+## ✅ [V2.0 大更新](bzmh-downloader/README_v2.0.md) - 强烈推荐使用 2.0 版本，Web应用，Docker安装，更方便，更直观。
+
 # 🖥️ 界面
 
 <img width="890" alt="93cc050d92f2e447a8e73b1e34e47ef" src="https://github.com/user-attachments/assets/a6844f9e-7d61-43af-b70f-4a9991b97f31" />  
