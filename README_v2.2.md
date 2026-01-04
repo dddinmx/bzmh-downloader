@@ -13,6 +13,7 @@
 
 # 🖥️ 界面
 <img width="2696" height="1514" alt="image" src="https://github.com/user-attachments/assets/801001c3-4280-4491-923c-6b3ff5e2cc27" />
+<img width="2676" height="1498" alt="image" src="https://github.com/user-attachments/assets/921c5a0a-3f99-4e5c-af61-fd347e72487a" />
 
 # 📖 使用方法
 
