@@ -16,9 +16,6 @@
 ## 桌面端
 <img width="2696" height="1514" alt="image" src="https://github.com/user-attachments/assets/801001c3-4280-4491-923c-6b3ff5e2cc27" />
 
-## 移动端
-<img width="542" height="574" alt="image" src="https://github.com/user-attachments/assets/1457ea0d-f357-497d-9eb6-7dad987cb9f4" />
-
 # 📖 使用方法
 
 #### 📝 步骤
