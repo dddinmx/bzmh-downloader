@@ -26,7 +26,7 @@
 #### 1. 拉取容器
 
 ```
-docker pull dddinmx/bzmh-downloader:v2.2
+docker pull dddinmx/bzmh-downloader:v2.3
 ```
 
 #### 2.运行命令
