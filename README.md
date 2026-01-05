@@ -42,9 +42,6 @@ pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 python3 bzmh-downloader.py   (为了下载稳定，请关闭代理软件使用!)
 ```
 
-# 📚 漫小肆韩漫 漫画下载器
-[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=dddinmx&repo=mxs-downloader)](https://github.com/dddinmx/mxs-downloader)
-
 # ⚠️ 免责声明
 
 - 本工具仅作学习、研究、交流使用，使用本工具的用户应自行承担风险
