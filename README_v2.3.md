@@ -7,7 +7,7 @@
   <a href="https://github.com/dddinmx/hxs-downloader/"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/dddinmx/bzmh-downloader?color=gree"></a>
 </p>
 
-## ✅ ***v2.3*** 版本，重构前端显示。
+## ✅ ***v2.3*** 版本，重构前端显示，支持 PWA 模式
 
 **如果本项目对你有帮助，欢迎点个 Star⭐ 支持！你的支持是我持续更新维护的动力🙏**
 
