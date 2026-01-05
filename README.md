@@ -21,7 +21,7 @@
 <img width="850" alt="img" src="https://github.com/user-attachments/assets/038cd2f5-708c-4d7e-a65a-1175ea2ef1a6" />  
 
 ## Terminal  
-<img width="1961" height="1387" alt="ShotEasy" src="https://github.com/user-attachments/assets/47bcbf53-a14f-4421-83f9-ecf2088344a8" />
+<img width="1807" height="1038" alt="ShotEasy (1)" src="https://github.com/user-attachments/assets/d18d5113-1f92-42ae-a042-51c510920399" />
 
 # 📖 使用方法
 
