@@ -18,7 +18,7 @@
 # 🖥️ 界面
 
 ## Web  
-<img width="542" height="574" alt="image" src="https://github.com/user-attachments/assets/04d6b9da-8543-47b9-8489-96825a566a20" />
+<img width="850" alt="img" src="https://github.com/user-attachments/assets/038cd2f5-708c-4d7e-a65a-1175ea2ef1a6" />  
 
 ## Terminal  
 <img width="890" alt="93cc050d92f2e447a8e73b1e34e47ef" src="https://github.com/user-attachments/assets/a6844f9e-7d61-43af-b70f-4a9991b97f31" />  
