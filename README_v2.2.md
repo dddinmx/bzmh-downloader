@@ -12,8 +12,12 @@
 **如果本项目对你有帮助，欢迎点个 Star⭐ 支持！你的支持是我持续更新维护的动力🙏**
 
 # 🖥️ 界面
+
+## 桌面端
 <img width="2696" height="1514" alt="image" src="https://github.com/user-attachments/assets/801001c3-4280-4491-923c-6b3ff5e2cc27" />
-<img width="2676" height="1498" alt="image" src="https://github.com/user-attachments/assets/921c5a0a-3f99-4e5c-af61-fd347e72487a" />
+
+## 移动端
+<img width="542" height="574" alt="image" src="https://github.com/user-attachments/assets/1457ea0d-f357-497d-9eb6-7dad987cb9f4" />
 
 # 📖 使用方法
 
