@@ -17,11 +17,11 @@
 
 # 🖥️ 界面
 
-## Web  
+## Phone  
 <img width="850" alt="img" src="https://github.com/user-attachments/assets/038cd2f5-708c-4d7e-a65a-1175ea2ef1a6" />  
 
-## Terminal  
-<img width="1807" height="1038" alt="ShotEasy (1)" src="https://github.com/user-attachments/assets/d18d5113-1f92-42ae-a042-51c510920399" />
+## Desktop  
+<img width="1933" height="1398" alt="ShotEasy" src="https://github.com/user-attachments/assets/d99a4881-fa55-4843-8028-afc9da35643b" />
 
 # 📖 使用方法
 
