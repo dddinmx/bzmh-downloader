@@ -13,7 +13,7 @@
 
 ## ✅「Docker」[V2.2](README_v2.2.md) - 修复下载过程中可能的中断，优化UI显示，优化漫画库阅读体验（目前仅CBZ格式可用）。
 
-## ✅「Docker」[V2.3](README_v2.3.md) - 重构前端，UI 使用更舒服，支持 PWA 模式。
+## ✅「Docker」[V2.3](README_v2.3.md) - 重构前端，支持 PWA 模式。
 
 # 🖥️ 界面
 
