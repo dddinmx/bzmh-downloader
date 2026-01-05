@@ -17,7 +17,7 @@
 <img width="2177" height="1302" alt="image" src="https://github.com/user-attachments/assets/d165f130-9c94-462d-93ce-aa1c8adb7711" />
 
 ## 移动端
-<img width="542" height="574" alt="image" src="https://github.com/user-attachments/assets/8d4af7b6-7932-4898-b9aa-82178a60df19" />
+<img width="542" height="574" alt="image" src="https://github.com/user-attachments/assets/04d6b9da-8543-47b9-8489-96825a566a20" />
 
 # 📖 使用方法
 
