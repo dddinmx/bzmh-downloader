@@ -16,6 +16,10 @@
 
 # 🖥️ 界面
 
+## Web  
+<img width="542" height="574" alt="image" src="https://github.com/user-attachments/assets/1457ea0d-f357-497d-9eb6-7dad987cb9f4" />
+
+## Terminal  
 <img width="890" alt="93cc050d92f2e447a8e73b1e34e47ef" src="https://github.com/user-attachments/assets/a6844f9e-7d61-43af-b70f-4a9991b97f31" />  
 
 # 📖 使用方法
