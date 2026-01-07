@@ -32,7 +32,7 @@ docker pull dddinmx/bzmh-downloader:v2.3
 #### 2.运行命令
 
 ```
-docker run -d -p 5001:5001 -v /path/bzmh/comic:/app/comic -v /path/bzmh/comic.json:/app/comic.json -v /path/bzmh/instance:/app/instance --name bzmh dddinmx/bzmh-downloader:v2.3 （将 ”/path“ 路径更换为你本地路径）
+docker run -d -p 5001:5001 -v /bzmh/comic:/app/comic -v /bzmh/comic.json:/app/comic.json --name bzmh2.3 dddinmx/bzmh-downloader:v2.3 （将 ”/path“ 路径更换为你本地路径）
 ```
 
 #### 3.运行
