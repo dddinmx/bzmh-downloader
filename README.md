@@ -13,7 +13,7 @@
 
 ### ✅「Docker」[V3.8](README_v3.8.md) - 建议更新，合并项目「[dddinmx/mxs-downloader](https://github.com/dddinmx/mxs-downloader)」，新增阅读统计页面。
 
-### ✅「Docker」[V2.3](README_v2.3.md) - 重构前端，支持 PWA 模式。
+### ✅「Docker」[V2.3](./old/README_v2.3.md) - 重构前端，支持 PWA 模式。
 
 # 🖥️ 界面
 
