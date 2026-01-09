@@ -8,7 +8,7 @@
 </p>
 
 ## ✅ ***v3.8*** 版本  
-#### 1️⃣ 重构前端显示  
+#### 1️⃣ 重构前端显示（漫画库在线阅读只支持CBZ格式）  
 #### 2️⃣ 增加阅读时间统计  
 #### 3️⃣ 合并项目 📎「[dddinmx/mxs-downloader](https://github.com/dddinmx/mxs-downloader)」，现在支持同时下载包子漫画和漫小肆韩漫
 
