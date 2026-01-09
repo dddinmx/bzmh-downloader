@@ -11,17 +11,17 @@
 
 **如果本项目对你有帮助，欢迎点个 Star⭐ 支持！你的支持是我持续更新维护的动力🙏**
 
-### ✅「Docker」[V2.2](README_v2.2.md) - 修复下载过程中可能的中断，优化UI显示，优化漫画库阅读体验（目前仅CBZ格式可用）。
+### ✅「Docker」[V3.8](README_v3.8.md) - 建议更新，合并项目「[dddinmx/mxs-downloader](https://github.com/dddinmx/mxs-downloader)」，新增阅读统计页面。
 
 ### ✅「Docker」[V2.3](README_v2.3.md) - 重构前端，支持 PWA 模式。
 
 # 🖥️ 界面
 
 ## Phone  
-<img width="850" alt="img" src="https://github.com/user-attachments/assets/038cd2f5-708c-4d7e-a65a-1175ea2ef1a6" />  
+<img width="850" alt="img" src="https://github.com/user-attachments/assets/962c9703-4589-4e68-9d51-f065b61a0680" />  
 
 ## Desktop  
-<img width="1933" height="1398" alt="ShotEasy" src="https://github.com/user-attachments/assets/d99a4881-fa55-4843-8028-afc9da35643b" />
+<img width="3116" height="1808" alt="ShotEasy" src="https://github.com/user-attachments/assets/dfe0b1f8-292f-4eaf-81ec-81fe6e1331ce" />
 
 # 📖 使用方法
 
