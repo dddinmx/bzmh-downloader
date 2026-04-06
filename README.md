@@ -1,5 +1,5 @@
-# 📚 bzmh-downloader
-![Head diagram](https://github.com/user-attachments/assets/e960c38a-cec4-450f-8cc1-75582dff2f1d)
+# 📚 棧-MangaDock
+![Head diagram](https://github.com/user-attachments/assets/701fe952-a866-4e4a-8ded-10a5ade1b9fd)
 <p align="center">
   <a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/crawler-bule"></a>
   <a href="https://github.com/dddinmx/bzmh-downloader"><img alt="Release" src="https://img.shields.io/badge/python-3.8%2B-8A2BE2"></a>
@@ -7,41 +7,80 @@
   <a href="https://github.com/dddinmx/hxs-downloader/"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/dddinmx/bzmh-downloader?color=gree"></a>
 </p>
 
-包子漫画漫画下载器，**免费下载收费漫画**，基于 Python3 开发，生成 pdf/cbz 漫画格式。  
+**棧**（MangaDock）漫画阅读 / 下载器，基于 Python3 开发。  
 
 **如果本项目对你有帮助，欢迎点个 Star⭐ 支持！你的支持是我持续更新维护的动力🙏**
 
-### ✅「Docker」[V3.8](README_v3.8.md) - 建议更新，合并项目「[dddinmx/mxs-downloader](https://github.com/dddinmx/mxs-downloader)」，新增阅读统计页面。
-
-### ✅「Docker」[V2.3](./old/README_v2.3.md) - 重构前端，支持 PWA 模式。
-
 # 🖥️ 界面
 
-## Phone  
-<img width="850" alt="img" src="https://github.com/user-attachments/assets/962c9703-4589-4e68-9d51-f065b61a0680" />  
+## Web PWA  
+<img width="850" alt="img" src="https://github.com/user-attachments/assets/9bdcfb9e-daca-4edb-b575-1c5b1e78cba4" />  
 
-## Desktop  
-<img width="3116" height="1808" alt="ShotEasy" src="https://github.com/user-attachments/assets/dfe0b1f8-292f-4eaf-81ec-81fe6e1331ce" />
+## Tachimanga  
+<img width="850" alt="img" src="https://github.com/user-attachments/assets/56501558-bd5e-4c7e-859a-65ab01c666da" />  
+
+## Aidoku  
+<img width="567" alt="img" src="https://github.com/user-attachments/assets/774ce995-a1c9-49d0-800a-34f60cc96848" />  
 
 # 📖 使用方法
 
-#### 📝 步骤
+### 📝 Docker 部署步骤
 
-#### 1. 克隆本仓库
+#### 1. 保存 docker-compose.yml 文件到本地
+
+```docker
+services:
+  mangadock:
+    image: dddinmx/mangadock:v1.0
+    container_name: MangaDock
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      TZ: Asia/Shanghai
+      MANGADOCK_COOKIE_SECURE: "false"
+    command:
+      - python3
+      - app.py
+    volumes:
+      - ./data/comic:/app/comic
+      - ./data/cover:/app/static/cover
+      - ./data/comic.json:/app/comic.json
+      - mangadock_instance:/app/instance
+
+volumes:
+  mangadock_instance:
+```
+
+#### 2.创建映射文件
 
 ```
-git clone https://github.com/dddinmx/bzmh-downloader.git
-```
+在本地创建好映射目录和comic.json文件
 
-#### 2.安装依赖
+mkdir -p ./data/comic ./data/instance ./data/cover
 
-```
-pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+touch ./data/comic.json  
 ```
 
 #### 3.运行
 ```
-python3 bzmh-downloader.py   (为了下载稳定，请关闭代理软件使用!)
+docker compose up -d  （默认账号：admin/123456）
+```
+
+### 📝 iOS 客户端
+```
+Releases 下载对应的插件，支持 Aidoku 和 Tachimanga 软件；
+
+Aidoku 下载 package.aix 导入安装；
+
+Tachimanga 下载 tachiyomi-all.mangadock-v1.4.1-debug.apk 导入安装；
+
+下载后在对应软件上安装插件并连接到上面使用 Docker 部署的服务地址
+```
+
+### 📝 Android 客户端
+```
+安卓的 Mihon 客户端不知道是否兼容 Tachimanga 的插件，使用安卓的可以尝试一下，我没有安卓手机无法测试。
 ```
 
 # ⚠️ 免责声明
@@ -53,7 +92,5 @@ python3 bzmh-downloader.py   (为了下载稳定，请关闭代理软件使用!)
 # 💬 其他
 
 任何使用中遇到的问题、任何希望添加的功能，都欢迎提交issue或开discussion交流，我会尽力解决。  
-关于IP 被封问题目前已解决，最新测试能稳定下载。  
-<img width="1322" height="728" alt="image" src="https://github.com/user-attachments/assets/753f4482-99ef-4dbb-9cad-351128a7b36f" />
 
 
