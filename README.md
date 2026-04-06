@@ -7,7 +7,12 @@
   <a href="https://github.com/dddinmx/hxs-downloader/"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/dddinmx/bzmh-downloader?color=gree"></a>
 </p>
 
-**棧**（MangaDock）漫画阅读 / 下载器，基于 Python3 开发。  
+**棧**（MangaDock）漫画阅读 / 下载器，基于 Python3 开发。   
+
+**支持站点：**  
+- [x] 漫小肆韓漫  
+- [x] 包子漫画（baozimh.org)  
+- [x] 包子漫画（cn.baozimhcn.com）
 
 **如果本项目对你有帮助，欢迎点个 Star⭐ 支持！你的支持是我持续更新维护的动力🙏**
 
